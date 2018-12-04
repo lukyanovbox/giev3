@@ -40,6 +40,7 @@ public class Application {
    private JLabel minLabel;
    private JList minInTourList;
    private JList etalonList;
+   private JLabel minFromFile;
 
    private XYSeriesCollection dataset;
 
@@ -63,7 +64,7 @@ public class Application {
       JFrame frame = new JFrame("Giev1");
       Application app = new Application();
       app.etalonList.setListData(CoordinatesExecutor.getEthalonIdList().toArray());
-
+      app.minFromFile.setText(String.format("%.2f", CoordinatesExecutor.optimalPathIndivid().executeFunctionValue()));
       frame.setContentPane(app.panelMain);
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       frame.pack();

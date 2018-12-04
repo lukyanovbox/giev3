@@ -37,6 +37,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.springframework.boot:spring-boot-starter-aop")
     compile ('org.apache.commons:commons-collections4:4.0')
+    compile group: 'com.google.guava', name: 'guava', version: '27.0.1-jre'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
     compile group: 'com.google.collections', name: 'google-collections', version: '1.0'
     compile group: 'org.jfree', name: 'jfreechart', version: '1.5.0'

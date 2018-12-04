@@ -16,6 +16,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.lukyanov.giev.util.CoordinatesExecutor.getCitiesCoords;
@@ -154,7 +155,10 @@ public class SimpleGiev3 {
 
    private List<Individ> selectAndCrossingOver(List<Individ> intermediatePopulation) {
       List<Individ> newPopulation = new ArrayList<>();
-      for (int i = 0; i < intermediatePopulation.size() / 2; i++) {
+      List<Individ> elit = intermediatePopulation.stream().sorted(Comparator.comparing(Individ::executeFunctionValue)).limit(
+            populationSize / 10)
+            .collect(Collectors.toList());
+      for (int i = 0; i < (intermediatePopulation.size() - elit.size()) / 2; i++) {
          int firstItemIndex = RandomUtils.nextInt(0, intermediatePopulation.size());
          int secondItemIndex = firstItemIndex;
          while (secondItemIndex == firstItemIndex) {
@@ -181,7 +185,13 @@ public class SimpleGiev3 {
                Individ.builder().chromosomes(new ArrayList<>(intermediatePopulation.get(rndIndex).chromosomes)).build());
       }
 
-      return newPopulation;
+      return ImmutableList.<Individ> builder()
+            .addAll(elit)
+            .addAll(newPopulation.stream()
+                  .sorted(Comparator.comparing(Individ::executeFunctionValue))
+                  .limit(populationSize - elit.size())
+                  .collect(Collectors.toList()))
+            .build();
    }
 
 
@@ -254,20 +264,39 @@ public class SimpleGiev3 {
 
 
    private List<Individ> mutate(List<Individ> population) {
-      //      for (Individ individ : population) {
-      //         double rnd = RandomUtils.nextDouble(0, 1);
-      //
-      //         if (rnd < mutationP) {
-      //
-      //            if (RandomUtils.nextInt(0, 2) == 0) {
-      //               individ.chromosome1.value = individ.chromosome1.value + 1;
-      //            }
-      //            else {
-      //               individ.chromosome2.value = individ.chromosome2.value + 1;
-      //
-      //            }
-      //         }
-      //      }
+      for (Individ individ : population) {
+
+         List<Chromosome> chromosomes = individ.chromosomes;
+         double rnd = RandomUtils.nextDouble(0, 1);
+
+         if (rnd < mutationP) {
+            int rndFrstI = RandomUtils.nextInt(0, chromosomes.size() - 1);
+            int rndSecI = rndFrstI;
+
+            while (rndSecI == rndFrstI) {
+               rndSecI = RandomUtils.nextInt(rndFrstI + 1, chromosomes.size());
+            }
+            List<Chromosome> sublist = chromosomes.subList(rndFrstI, rndSecI);
+
+            sublist = Lists.reverse(sublist);
+
+            individ.setChromosomes(
+                  ImmutableList.<Chromosome> builder()
+                        .addAll(chromosomes.subList(0, rndFrstI))
+                        .addAll(sublist)
+                        .addAll(chromosomes.subList(rndSecI, chromosomes.size()))
+                        .build()
+            );
+
+            //            Chromosome chromosome1 = chromosomes.get(rndFrstI);
+            //            Chromosome chromosome2 = chromosomes.get(rndSecI);
+            //
+            //
+            //            chromosomes.set(rndFrstI, chromosome2);
+            //            chromosomes.set(rndSecI, chromosome1);
+
+         }
+      }
 
       return population;
    }

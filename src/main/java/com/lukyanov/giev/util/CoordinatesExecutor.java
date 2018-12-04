@@ -2,9 +2,11 @@ package com.lukyanov.giev.util;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 import com.lukyanov.giev.algorithm.Chromosome;
+import com.lukyanov.giev.algorithm.Individ;
 
 
 public class CoordinatesExecutor {
@@ -169,9 +171,14 @@ public class CoordinatesExecutor {
             .add(21)
             .add(22)
             .add(23)
-            .add(-1)
             .build();
 
+   }
+
+   public static Individ optimalPathIndivid() {
+      return Individ.builder().chromosomes(getEthalonIdList().stream().map(id -> cityChromosomes.stream().filter(
+            ch -> ch.getId() == id).findFirst().get()).collect(
+            Collectors.toList())).build();
    }
 
 }
